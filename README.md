@@ -1,4 +1,4 @@
-# Summary Report and Presentation on a Scientific Article
+# Summary Report and Presentation
 
 **Selected Article**: [Training Models to Follow Instructions with Human Feedback](https://arxiv.org/pdf/2203.02155)
 
