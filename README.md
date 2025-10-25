@@ -1,3 +1,9 @@
+# Summary Report and Presentation on a Scientific Article
+
+**Selected Article**: [Training Models to Follow Instructions with Human Feedback](https://arxiv.org/pdf/2203.02155)
+
+---
+
 **Instructions:**
 
 - Clearly identify the **objective of the study** in the chosen article;
@@ -17,3 +23,5 @@
 - Ability to relate the methodology to the article’s objectives and conclusions (**30%**);
 - Organization and teaching effectiveness of the presentation (**20%**);
 - Adherence to the proposed time and format (**5%**).
+
+---
