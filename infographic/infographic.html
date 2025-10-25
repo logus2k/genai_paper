@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstructGPT: Aligning LLMs with Human Intent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7FAFC;
+            color: #073B4C;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .stat-card {
+            background-color: #118AB2;
+            color: white;
+        }
+        .text-accent-green { color: #06D6A0; }
+        .text-accent-yellow { color: #FFD166; }
+        .text-accent-red { color: #FF6B6B; }
+        .bg-accent-green { background-color: #06D6A0; }
+        .bg-accent-yellow { background-color: #FFD166; }
+        .bg-accent-red { background-color: #FF6B6B; }
+        .bg-primary-dark { background-color: #073B4C; }
+        .bg-primary-light { background-color: #118AB2; }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-primary-light mb-4">InstructGPT: Aligning LLMs</h1>
+            <h2 class="text-xl md:text-2xl font-light text-gray-700">Visualizing the 3-Step RLHF Methodology and its Impact</h2>
+        </header>
+
+        <section class="mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">The Alignment Problem</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center mb-8">
+                Scaling Large Language Models (LLMs) like GPT-3 does not automatically make them better at following user intent. The base training objective (next-token prediction) is misaligned with the user's goal, leading to several key failures.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card text-center">
+                    <div class="text-5xl mb-4">😵</div>
+                    <h3 class="text-xl font-semibold mb-2">Untruthful</h3>
+                    <p class="text-gray-600">Models "hallucinate" or fabricate facts and information not present in their training data.</p>
+                </div>
+                <div class="card text-center">
+                    <div class="text-5xl mb-4">☣️</div>
+                    <h3 class="text-xl font-semibold mb-2">Toxic or Unsafe</h3>
+                    <p class="text-gray-600">Models can generate harmful, biased, or inappropriate content when prompted.</p>
+                </div>
+                <div class="card text-center">
+                    <div class="text-5xl mb-4">🤷</div>
+                    <h3 class="text-xl font-semibold mb-2">Unhelpful</h3>
+                    <p class="text-gray-600">Models may fail to follow explicit instructions or generate irrelevant responses.</p>
+                </div>
+            </div>
+            <p class="text-xl text-gray-700 max-w-3xl mx-auto text-center mt-8 font-semibold">
+                The objective: Align models to be <span class="text-accent-green">Helpful</span>, <span class="text-primary-light">Honest</span>, and <span class="text-accent-yellow">Harmless</span>.
+            </p>
+        </section>
+        
+        <!-- Removed: Alignment Scenario Generator Section -->
+
+        <section class="card mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">Core Thesis: Alignment Outperforms Scale</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center mb-8">
+                The research found that using Reinforcement Learning from Human Feedback (RLHF) is a more efficient way to improve model utility than simply increasing its size.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="text-center">
+                    <div class="text-6xl font-bold text-accent-green mb-2">1.3B</div>
+                    <p class="text-xl font-semibold text-gray-700 mb-4">InstructGPT Parameters</p>
+                    <div class="text-4xl font-light text-gray-500 mb-4">&gt;</div>
+                    <div class="text-6xl font-bold text-accent-red mb-2">175B</div>
+                    <p class="text-xl font-semibold text-gray-700">GPT-3 Parameters</p>
+                    <p class="text-lg text-gray-600 mt-4">The 1.3B InstructGPT model was preferred by human evaluators over the 100x larger 175B GPT-3 model.</p>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="preferenceChart"></canvas>
+                    </div>
+                    <p class="text-center text-gray-600 mt-4">
+                        When comparing models of the same size, <strong>85% of evaluators</strong> preferred the 175B InstructGPT output over the 175B GPT-3.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">The 3-Step Alignment Pipeline</h2>
+            <div class="flex flex-col md:flex-row justify-between items-center text-center">
+                
+                <div class="card flex-1 max-w-sm md:max-w-none">
+                    <div class="text-2xl font-bold bg-primary-light text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">1</div>
+                    <h3 class="text-xl font-semibold mb-2">Supervised Fine-Tuning (SFT)</h3>
+                    <!-- Math notation fixed -->
+                    <p class="text-gray-600">Establish a baseline policy by training GPT-3 on human-written demonstrations (&pi;<sup>SFT</sup>).</p>
+                </div>
+                
+                <div class="text-5xl font-bold text-primary-light mx-6 my-4 md:my-0 transform md:rotate-0 rotate-90">&rarr;</div>
+
+                <div class="card flex-1 max-w-sm md:max-w-none">
+                    <div class="text-2xl font-bold bg-primary-light text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">2</div>
+                    <h3 class="text-xl font-semibold mb-2">Reward Model (RM) Training</h3>
+                    <!-- Math notation fixed -->
+                    <p class="text-gray-600">Train a separate model to predict human preference by ranking SFT model outputs (R&theta;).</p>
+                </div>
+
+                <div class="text-5xl font-bold text-primary-light mx-6 my-4 md:my-0 transform md:rotate-0 rotate-90">&rarr;</div>
+
+                <div class="card flex-1 max-w-sm md:max-w-none">
+                    <div class="text-2xl font-bold bg-primary-light text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">3</div>
+                    <h3 class="text-xl font-semibold mb-2">RLHF (PPO) Optimization</h3>
+                    <!-- Math notation fixed -->
+                    <p class="text-gray-600">Optimize the SFT policy using PPO, with the RM score as the reward signal (&pi;<sup>RLHF</sup>).</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">Deep Dive: Step 1 (SFT & Data)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">SFT: Behavior Cloning</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li><strong>Objective:</strong> Teach the model basic instruction-following by imitating humans.</li>
+                        <li><strong>Workforce:</strong> A team of <strong>~40 contractors</strong> wrote high-quality demonstrations.</li>
+                        <li><strong>Dataset Size:</strong> <strong>~13,000 prompts</strong> were collected for this initial phase.</li>
+                        <li><strong>Data Sources:</strong>
+                            <ul class="list-disc list-inside ml-6">
+                                <li><strong>Customer API Prompts:</strong> Filtered for PII and de-duplicated.</li>
+                                <li><strong>Labeler-Written Prompts:</strong> To bootstrap the process.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="sftDataChart"></canvas>
+                    </div>
+                    <p class="text-center text-gray-600 mt-4">
+                        The SFT dataset was heavily weighted towards generative tasks, rather than simple Q&A.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">Deep Dive: Steps 2 & 3 (RM & PPO)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Step 2: Reward Model (RM)</h3>
+                    <p class="text-gray-700 mb-4">The goal is to translate subjective human preference into a numeric score. Human labelers ranked multiple model outputs for <strong>~33,000 prompts</strong>. This ranking data was used to train the Reward Model (R&theta;) to predict which outputs humans would prefer.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Step 3: RLHF (PPO)</h3>
+                    <p class="text-gray-700 mb-2">The final policy is refined using the <strong>PPO algorithm</strong>, with the RM's score as the reward.</p>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <!-- Formatting fixed for KL Penalty -->
+                        <li><strong>KL Penalty:</strong> A penalty is applied against the original SFT model. This prevents the new policy from "over-optimizing" for the Reward Model and diverging too far from the human-written text style.</li>
+                        <li><strong>PPO-ptx:</strong> A variant that mixes in pretraining gradients to prevent performance loss (the "Alignment Tax") on academic benchmarks.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">Key Finding: Safety & Truthfulness</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center mb-8">
+                The alignment process significantly improved the model's performance on key safety and honesty metrics, though it was not a complete solution.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card">
+                    <div class="chart-container">
+                        <canvas id="safetyChart"></canvas>
+                    </div>
+                    <p class="text-center text-gray-600 mt-4">
+                        InstructGPT <strong>halved the rate of "hallucinations"</strong> (making up facts) in closed-domain tasks compared to the baseline GPT-3.
+                    </p>
+                </div>
+                <div class="space-y-6">
+                    <div class="card stat-card">
+                        <h3 class="text-2xl font-bold">~2x Better Truthfulness</h3>
+                        <p>On the TruthfulQA benchmark, InstructGPT was approximately twice as truthful, reducing the tendency to mimic human falsehoods.</p>
+                    </div>
+                    <div class="card stat-card">
+                        <h3 class="text-2xl font-bold">~25% Toxicity Reduction</h3>
+                        <p>When instructed to be respectful, the model reduced toxic output generation by ~25% as measured by the Perspective API.</p>
+                    </div>
+                    <div class="card bg-accent-yellow text-gray-900">
+                        <h3 class="text-2xl font-bold">No Bias Improvement</h3>
+                        <p>Despite other gains, the models showed no significant improvement in bias on standard benchmarks (e.g., Winogender).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card mb-12 md:mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">Key Finding: Cost-Effectiveness</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center mb-8">
+                RLHF is dramatically more computationally efficient than pretraining. This shows alignment is a cost-effective way to create more useful models.
+            </p>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="costChart"></canvas>
+            </div>
+            <p class="text-center text-gray-600 mt-4">
+                Training the 175B InstructGPT model required only <strong>60 petaflop/s-days</strong>, a small fraction of the <strong>3,640</strong> needed for the initial GPT-3 pretraining.
+            </p>
+        </section>
+
+        <section class="text-center">
+            <h2 class="text-3xl font-bold text-center mb-8">Conclusion & The Urgent Question</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto mb-6">
+                InstructGPT validated RLHF as a highly effective, cost-efficient, and scalable method for aligning LLMs with human intent. It set a new standard for developing models that are reliable, controllable, and useful.
+            </p>
+            <div class="card bg-primary-dark text-white max-w-2xl mx-auto">
+                <h3 class="text-2xl md:text-3xl font-bold">"Whose Preferences?"</h3>
+                <p class="text-lg text-gray-200 mt-4">
+                    The most critical open question remains. The model is aligned to the preferences of ~40 contractors. As alignment becomes more powerful, the need for an <strong>inclusive, transparent, and representative</strong> process for defining human values becomes the most urgent challenge for the AI community.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- Chart Initialization Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const defaultTooltipCallbacks = {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            };
+
+            function wrapLabels(label) {
+                if (typeof label === 'string' && label.length > 16) {
+                    const words = label.split(' ');
+                    const lines = [];
+                    let currentLine = '';
+                    for (const word of words) {
+                        if ((currentLine + ' ' + word).trim().length > 16 && currentLine.length > 0) {
+                            lines.push(currentLine);
+                            currentLine = word;
+                        } else {
+                            currentLine = (currentLine + ' ' + word).trim();
+                        }
+                    }
+                    if (currentLine.length > 0) lines.push(currentLine);
+                    return lines;
+                }
+                return label;
+            }
+
+            const preferenceCtx = document.getElementById('preferenceChart')?.getContext('2d');
+            if (preferenceCtx) {
+                new Chart(preferenceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['InstructGPT (175B)', 'GPT-3 (175B)'],
+                        datasets: [{
+                            data: [85, 15],
+                            backgroundColor: ['#06D6A0', '#FF6B6B'],
+                            borderColor: '#F7FAFC',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: defaultTooltipCallbacks
+                            }
+                        }
+                    }
+                });
+            }
+
+            const sftDataCtx = document.getElementById('sftDataChart')?.getContext('2d');
+            if (sftDataCtx) {
+                new Chart(sftDataCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Generation (45.6%)', 'Open QA (12.4%)', 'Brainstorming (11.2%)', 'Other (30.8%)'],
+                        datasets: [{
+                            data: [45.6, 12.4, 11.2, 30.8],
+                            backgroundColor: ['#118AB2', '#06D6A0', '#FFD166', '#FF6B6B'],
+                            borderColor: '#F7FAFC',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: defaultTooltipCallbacks
+                            }
+                        }
+                    }
+                });
+            }
+
+            const safetyCtx = document.getElementById('safetyChart')?.getContext('2d');
+            if (safetyCtx) {
+                new Chart(safetyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Hallucination Rate (Closed Domain)'],
+                        datasets: [
+                            {
+                                label: 'GPT-3 (175B)',
+                                data: [41],
+                                backgroundColor: '#FF6B6B',
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.5
+                            },
+                            {
+                                label: 'InstructGPT (175B)',
+                                data: [21],
+                                backgroundColor: '#06D6A0',
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Hallucination Rate (%)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: defaultTooltipCallbacks
+                            }
+                        }
+                    }
+                });
+            }
+
+            const costCtx = document.getElementById('costChart')?.getContext('2d');
+            if (costCtx) {
+                const costLabels = ['GPT-3 Pretraining', 'InstructGPT Alignment'];
+                new Chart(costCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: costLabels.map(wrapLabels),
+                        datasets: [{
+                            label: 'Petaflop/s-days (Log Scale)',
+                            data: [3640, 60],
+                            backgroundColor: ['#FF6B6B', '#06D6A0'],
+                            borderColor: ['#FF6B6B', '#06D6A0'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Petaflop/s-days (Logarithmic Scale)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: defaultTooltipCallbacks
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
