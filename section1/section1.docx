@@ -1,0 +1,7 @@
+## 2. Objective of the Study 
+  
+  The primary objective of the study by Ouyang et al. (2022) is to explore how large language models (LLMs) can be better aligned with human intentions through a scalable and effective training approach. Rather than relying solely on traditional next-token prediction or increasing model size, the authors introduce Reinforcement Learning from Human Feedback (RLHF) as a method to fine-tune model behavior based on direct human preferences.
+
+  Specifically, the study seeks to demonstrate that aligning a model with human feedback can lead to more helpful, honest, and harmless (HOH) outputs, outperforming much larger models trained without alignment. This is empirically validated by comparing InstructGPT (1.3B parameters) to the original GPT-3 (175B parameters), with human evaluators consistently preferring the smaller, aligned model.
+
+    Ultimately, the study proposes a shift in paradigm: prioritizing alignment over scale as a key strategy for building safer and more trustworthy AI systems.
